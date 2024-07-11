@@ -1,0 +1,8 @@
+{
+    "device_num": 8,
+    "switch_num": 9,
+    "topo_map_path": "data/topo.map",
+    "app_path": "data/app.json",
+    "flow_num": 30,
+    "flow_gen_func": "A380_flow_gen"
+}
