@@ -2,6 +2,8 @@ from queue import Queue
 from parameter import param
 from packet import *
 from statistics_pkt import *
+import copy
+
 class Switch:
     def __init__(self, _id = 0,_link = [], _gate = [],  _forward_table = []) -> None:
         self.id = _id
@@ -10,6 +12,7 @@ class Switch:
         self.link = _link 
         self.gate = _gate 
         self.process_packets = Queue()
+        self.unique_pkt_map = set()
 
     def set_forward_table(self, _forward_table, _link):
         self.forward_table = _forward_table
@@ -31,7 +34,7 @@ class Switch:
         #queue delay
         for j in range(param.priority_num): 
             if not self.packet_queue[j].empty():
-                port = self.get_port_id(self.packet_queue[j].queue[0].get_next_route())
+                port = self.get_port_id(self.packet_queue[j].queue[0].next_hop())
                 transmit_start_time = max(links[self.link[port]].get_next_available_time(), self.time_to_open(j))
                 event_time = min(event_time, transmit_start_time)
         return event_time
@@ -50,8 +53,10 @@ class Switch:
         accept the priority of the queue and returns when the priority opens
         '''
         now_gate_id = int(param.now_time / param.time_unit) % param.gate_loop
-        # print(priority, now_gate_id)
-        if self.gate[priority][now_gate_id] == 1:
+        guard_band_id = int((param.now_time + param.guard_band_unit) / param.time_unit) % param.gate_loop
+
+        # not in the guard band time
+        if self.gate[priority][now_gate_id] == 1 and now_gate_id == guard_band_id:
             return param.now_time
 
         for i in range(1, param.gate_loop):
@@ -61,6 +66,11 @@ class Switch:
 
     def is_gate_open_now(self, priority) -> bool:
         now_gate_id = int(param.now_time / param.time_unit) % param.gate_loop
+        guard_band_id = int((param.now_time + param.guard_band_unit) / param.time_unit) % param.gate_loop
+        if param.verbose:
+            print(f'switch_id: {self.id}, now_gate_id: {now_gate_id}, guard_band_id: {guard_band_id}')
+        if now_gate_id != guard_band_id:
+            return False
         return self.gate[priority][now_gate_id] == 1
     
     def do(self, links):
@@ -70,10 +80,11 @@ class Switch:
             if param.now_time  <= pkt.timestamp[-1] + param.process_delay + param.eps: #eliminate double possile error, maybe
                 self.process_packets.get()
                 self.packet_queue[pkt.priority].put(pkt)
+
         #queue delay
         for j in range(param.priority_num - 1, -1, -1): 
             while not self.packet_queue[j].empty():
-                p = self.get_port_id(self.packet_queue[j].queue[0].get_next_route())
+                p = self.get_port_id(self.packet_queue[j].queue[0].next_hop())
                 if param.verbose:
                     print(f'In switch {self.id}, transmitting packet at port {p}, is available:{links[self.link[p]].is_available()} and gate status:{self.is_gate_open_now(j)}, time_to_open {self.time_to_open(j)}')
                 if links[self.link[p]].is_available() and self.is_gate_open_now(j):
@@ -107,15 +118,22 @@ class Switch:
             print(pkts[i].app_id, pkts[i].route)
 
     def receive_packet(self, pkt:Packet):
-        if self.get_buffer_size() <= 32:
+        if self.get_buffer_size() <= param.switch_buffer_size:
+
+            # if param.enable_cb:
+            #     if (pkt.id, pkt.app_id) in self.unique_pkt_map:
+            #         return
+            #     self.unique_pkt_map.add((pkt.id, pkt.app_id))
+
+            pkt.qch_priority_change()
             self.process_packets.put(pkt)
             pkt.timestamp.append(param.now_time)
             pkt.hop += 1
         else:
 
-            # if pkt.app_id == 116:
-            # print('pkt:', pkt.route, ' switch_id:', self.id, ' app_id:', pkt.app_id)
-            # print(pkt.timestamp)
-            # self.print_queue()
+            if pkt.app_id == 286:
+                print('pkt:', pkt.route, ' switch_id:', self.id, ' app_id:', pkt.app_id)
+                print(pkt.timestamp)
+                self.print_queue()
 
             g_stat.add_pkt_lost(pkt)

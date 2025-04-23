@@ -85,4 +85,12 @@ class Statistics:
         ret['avg'] = self.app_latency_average()
         return ret
 
+    def get_random_packet_timestamp(self):
+        for app in self.app_timestamp:
+            for pkt in self.app_timestamp[app]:
+                latency = pkt[-1] - pkt[0]
+                if latency > 10:
+                    print(app, pkt)
+                    break
+
 g_stat = Statistics()

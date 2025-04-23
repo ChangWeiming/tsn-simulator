@@ -14,6 +14,7 @@ def fixed_interval(a):
     return a
 
 class Scenario:
+
     def __init__(self, conf: config.Config, gate = None, apps = []) -> None:
         configs = conf.get_config_map()
 
@@ -23,8 +24,13 @@ class Scenario:
         self.app_path= 'data/app.json' if len(configs['app_path']) == 0 else configs['app_path']
         self.device_num = configs['device_num']
         self.switch_num = configs['switch_num']
+        param.stop_time = conf.get_value_with_default("simulation_time_ms", 32) 
+        param.link_speed = conf.get_value_with_default("bandwidth_mb", 100) 
 
-        self.n = self.device_num + self.switch_num
+        if configs["core_mode"]:
+            self.n = self.switch_num * 2
+        else:
+            self.n = self.switch_num + self.device_num
         self.devices = []
         self.links = []
         self.graph = []
@@ -33,6 +39,10 @@ class Scenario:
 
         for x in range(self.n):
             self.graph.append([-1] * self.n)
+
+        if configs["core_mode"]:
+            for i in range(self.switch_num):
+                self.add_edge(i, i + self.switch_num)
 
     def add_edge(self, f, t):
         if self.graph[f][t] != -1:
@@ -79,7 +89,13 @@ class Scenario:
         return ret_list
 
     def prepare(self):
+        param.gate_loop = 2
+        param.guard_band_unit = 0
         param.now_time = 0.0
+        param.enable_qbv = False
+        param.enable_qch = True
+        param.enable_cb = False
+
         for i in range(self.switch_num):
             self.devices.append(Switch(_id=i))
         for i in range(self.switch_num, self.n):
@@ -105,7 +121,12 @@ class Scenario:
                 gate.append([])
                 for j in range(param.gate_loop):
                     gate[i].append(1)
-        
+            
+            if param.enable_qch:
+                for i in range(param.gate_loop):
+                    gate[7][i] = 1 - i
+                    gate[6][i] = i
+                #print(gate)
             for i in range(0, self.switch_num):
                 self.devices[i].set_gate(gate)
         else:

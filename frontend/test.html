@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        html, body{
+            height: -webkit-fill-available;
+        }
+
+        body {
+            display: flex;
+            margin: 0;
+            /* min-height: 100%; */
+        }
+
+        #config-section {
+            width: 25%;
+            background-color: #f0f0f5;
+            padding: 0px;
+            padding-left: 20px;
+            padding-right: 20px;
+            height: 100%;
+            /* display: flex; */
+        }
+
+        #visualization-section {
+            width: 75%;
+            background-color: #ffffff;
+            /* padding: 20px; */
+            background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAiCAIAAACx0EyoAAAACXBIWXMAAAsTAAALEwEAmpwYAAAGaGlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDUgNzkuMTYzNDk5LCAyMDE4LzA4LzEzLTE2OjQwOjIyICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ0MgMjAxOSAoTWFjaW50b3NoKSIgeG1wOkNyZWF0ZURhdGU9IjIwMjAtMTItMDNUMTQ6MTg6NTYrMDg6MDAiIHhtcDpNb2RpZnlEYXRlPSIyMDIwLTEyLTAzVDE0OjE5OjM0KzA4OjAwIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDIwLTEyLTAzVDE0OjE5OjM0KzA4OjAwIiBkYzpmb3JtYXQ9ImltYWdlL3BuZyIgcGhvdG9zaG9wOkNvbG9yTW9kZT0iMyIgcGhvdG9zaG9wOklDQ1Byb2ZpbGU9InNSR0IgSUVDNjE5NjYtMi4xIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjIyMzlmYWQ5LTc2MTQtNDgxMS1iMTdjLTc5NTM4ZTJkYjIxZCIgeG1wTU06RG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOjIzZTc3YmVmLTRkY2EtNWQ0Yy1iOTQyLWZlMDAzZWMyODVhNCIgeG1wTU06T3JpZ2luYWxEb2N1bWVudElEPSJ4bXAuZGlkOjE5ZTE1NmY5LTg4YjAtNGFmMy04ZmEyLWZlYmY4NmZmZGY1OCI+IDx4bXBNTTpIaXN0b3J5PiA8cmRmOlNlcT4gPHJkZjpsaSBzdEV2dDphY3Rpb249ImNyZWF0ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6MTllMTU2ZjktODhiMC00YWYzLThmYTItZmViZjg2ZmZkZjU4IiBzdEV2dDp3aGVuPSIyMDIwLTEyLTAzVDE0OjE4OjU2KzA4OjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgQ0MgMjAxOSAoTWFjaW50b3NoKSIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY29udmVydGVkIiBzdEV2dDpwYXJhbWV0ZXJzPSJmcm9tIGFwcGxpY2F0aW9uL3ZuZC5hZG9iZS5waG90b3Nob3AgdG8gaW1hZ2UvcG5nIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJzYXZlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDoyMjM5ZmFkOS03NjE0LTQ4MTEtYjE3Yy03OTUzOGUyZGIyMWQiIHN0RXZ0OndoZW49IjIwMjAtMTItMDNUMTQ6MTk6MzQrMDg6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE5IChNYWNpbnRvc2gpIiBzdEV2dDpjaGFuZ2VkPSIvIi8+IDwvcmRmOlNlcT4gPC94bXBNTTpIaXN0b3J5PiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PjD4GuYAAAH0SURBVEiJ3VbLkuQgDJOB/P/f9qGDzR40rfEQ0o9UzdbWckgp5mkLy9gYA0BEACilAHB3ALVWAGMMd2+tEUcE7RHh7tu2AQDQe9eYfd+3bTMzALfbreCXW+u9Lz2gZ/SAQ+mBPI4IHpMeaIy7mxm73L1xUU5b4jEGcUSUUojZJWxmwtyAv6WUpo6XG5iZuy830MY01lrpgZn9Ogf/HsnEE8mMO5Yk8/7mDdinPDCzszyg/eukjzFjjNaaFvksRHTrfTuAplDkr5nlOccxOuxxj8ne9n3HzxBlzLDQwpnC4gZA712L0k4aeu+NenJBi8xMWiSeOExa1MTG2Vdn0WHVu7QzvLnrM5Lziu/YcVnsdN/Z9UzsGFP+Z10SB/iZE8JjDGL+CpMn5cFFDhTrM/tFDi60xuhLZPAIy/LuC8ejacqE5VAjh1piwseZxFxd/GfCM8kR8VmiCU9FHwAxvVSi7fv+HxScM7FTuN1dQpYTLd+LLHzigzV8wcGkpk8KzlLsAOSC821Ve1I9XhacqRjg7xX9nAE5D3CIr06a735ESO+UH2YWES3f/ePDizl5fNllO6fnuUjvhxcvu6yyPNHyZVdrPXvZLUh+Uj3eadP0Lw6yPExSMWmR2DorOMTfBed+vyssuZaJzyxqKnB5Mw4+JiYT7Q/UrO0Jmi1AfwAAAABJRU5ErkJggg==");
+            background-repeat: repeat;
+            margin: 0;
+            height: 100%;
+            /* height: auto; */
+        }
+
+        button {
+            color: #444444;
+            background: #F3F3F3;
+            border: 1px #DADADA solid;
+            padding: 5px 10px;
+            border-radius: 2px;
+            font-weight: bold;
+            font-size: 10pt;
+            outline: none;
+        }
+
+        button:hover {
+            border: 1px #C6C6C6 solid;
+            box-shadow: 1px 1px 1px #EAEAEA;
+            color: #333333;
+            background: #F7F7F7;
+        }
+
+        button:active {
+            box-shadow: inset 1px 1px 1px #DFDFDF;   
+        }
+
+        /* Blue button as seen on translate.google.com*/
+        button.blue {
+            color: white;
+            background: #4C8FFB;
+            border: 1px #3079ED solid;
+            box-shadow: inset 0 1px 0 #80B0FB;
+        }
+
+        button.blue:hover {
+            border: 1px #2F5BB7 solid;
+            box-shadow: 0 1px 1px #EAEAEA, inset 0 1px 0 #5A94F1;
+            background: #3F83F1;
+        }
+
+        button.blue:active {
+            box-shadow: inset 0 2px 5px #2370FE;   
+        }
+
+    </style>
+</head>
+
+<body>
+    <div id="config-section">
+        <h3 style="line-height: 28px;display: flex;  align-items: center;"><img src="./img/mesh.png" height="25px" style="padding-right: 5px;"> Topology Generation</h3>
+        <!-- <p>这里可以放置各种配置选项，例如：</p> -->
+        <ul>
+            <li>
+                <p>Number of Switches: </p>
+                <input type="number" id="inputNumber">
+                <button onclick="createNodes()">Generate</button>
+            </li>
+            <!-- <li>开关：<input type="checkbox"></li> -->
+        </ul>
+        <h3 style="line-height: 28px;display: flex;  align-items: center;"><img src="./img/config.png" height="25px" style="padding-right: 5px;"> Per Switch Config:</h3>
+        <div id="flow-config" style="overflow-y: auto; max-height: 50%;  max-width: inherit;  margin-bottom: 10px;padding-bottom: 3px; display: flex; flex-direction: column;">
+            <p>Config of <select id="switch-config" onselect="listNowApp()"> </select> </p>
+            <div> Source: <input type="number" id="app-src"> </div>
+            <div>Destination: <input type="number" id="app-dest"> </div>
+            <div>Packet Size(B): <input type="number" id="app-pkt"></div>
+            <div>Interval Function: <select id="app-interval-func"><option value="fixed"> fixed </option></select></div>
+            <div>Interval(us): <input type="number" id="app-interval"></div>
+            <div> Deadline(ms): <input type="number" id="app-ddl"></div>
+            <div>Probability: <input type="number" id="app-prob"></div>
+            <div>Route: <input type="text" id="app-route"></div>
+            <div>Priority: <input type="number" id="app-pri"></div>
+            <div>Start Time(ms): <input type="number" id="numberInput"></div>
+
+            <div id="result"></div>
+        </div>
+
+
+        <div id="export" style="position: absolute;"> Export your config: <button>Export</button></div>
+    </div>
+    
+    <div id="visualization-section" style="padding: 0;">
+        <!-- <ul style="position: absolute; right: 0">
+            <li>1、支持节点单个拖拽</li>
+            <li>2、支持节点选中高亮/连线选中高亮</li>
+            <li>3、支持节点多个选中同时拖拽</li>
+            <li>4、画布zoom</li>
+            <li>5、鼠标右键快捷多选（框选）</li>
+            <li>6、功能键-放大</li>
+            <li>7、功能键-缩小</li>
+            <li>8、功能键-最佳位置</li>
+        </ul> -->
+        <p style="padding-left: 20px;">
+            <button class = "blue" onclick="zoomOut()">ZoomOut</button>
+            <button class = "blue" onclick="zoomIn()">ZoomIn</button>
+            <button class = "blue" onclick="zoomCenter()">ZoomCenter</button>
+        </p>
+        <canvas style="padding: 0;"></canvas>
+    </div>
+
+
+
+   
+</body>
+
+</html>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script>
+// let data = {
+//     nodes: [], links: []
+// }
+
+// function addNodes(num) {
+//     for (let i = 0; i < len; i++) {
+//         data.nodes.push({id : i})
+//     }
+// }
+
+
+let initGraphData = {
+    idPoint: {},
+    data: { nodes: [], links: [] },
+    init(len) {
+        // console.log(this.data)
+        this.data = { nodes: [], links: [] };
+        for (let i = 0; i < len ; i++) {
+            this.data.nodes.push( { id: i })
+        }
+        return this.data;
+    },
+}
+
+
+</script>
+<script>
+    const IMG_BASE64 = 'data:image/png;base64,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'
+    const WIDTH = document.getElementById('visualization-section').offsetWidth;
+    const HEIGHT = document.getElementById('visualization-section').offsetHeight;
+
+    let img = null;
+    let zoom = null;  
+    let isBrush = false;
+    let shapeMap = new Map();
+    let nodeMap = new Map();
+    let nodeAbout = false;
+    let diffX, diffY;
+    let dragging = false;
+    let selectNodeList = [];
+    let selectEdgeList = [];
+    let transform = {x: 0, y: 0, k: 1};
+    let simulation = {}
+    let helperCanvasId = {
+        idPool: {},
+
+        createOnceId() {
+            return Array(3)
+            .fill(0)
+            .map(() => Math.ceil(Math.random() * 255))
+            .concat(255)
+            .join("-");
+        },
+        
+        idToRgba(id) {
+           return id.split("-");
+        },
+
+        rgbaToId(rgba) {
+         return rgba.join("-");
+        },
+
+        createId() {
+          let id = this.createOnceId();
+          while (this.idPool[id]) {
+            id = this.createOnceId(e);
+          }
+         return id;
+        }
+    };
+
+    //准备
+    let canvas = document.querySelector('canvas');
+    canvas.width = WIDTH ,
+    canvas.height = HEIGHT;
+
+    let ctx = canvas.getContext('2d');
+    let data = {};
+
+    let apps = []
+    //MDN: OffscreenCanvas提供了一个可以脱离屏幕渲染的canvas对象
+    const osCanvas = new OffscreenCanvas(canvas.width, canvas.height);
+    const osCtx = osCanvas.getContext('2d');
+
+    //引力布局
+    async function initTransform() {
+        simulation = d3.forceSimulation(data.nodes)
+            .force('link', d3.forceLink(data.links).id(d => d.id).distance(100))
+            .force('charge', d3.forceManyBody().strength(-1520))
+            .force('xAxis', d3.forceX(WIDTH / 2).strength(0.3))
+            .force('yAxis', d3.forceY(HEIGHT / 2).strength(0.7))
+            .force('center', d3.forceCenter(100, 100));
+        // console.log("init transform:", data)
+        const promise = new Promise(function (resolve, reject) {
+            simulation.on("tick", () => {
+                if (simulation.alpha() <= 1) {
+                    simulation.stop();
+
+                    data.nodes.forEach(item => {
+                        item.x = Math.abs(item.x)
+                        item.y = Math.abs(item.y)
+                    })
+
+                    data.links.forEach(item => {
+                        item.source.x = Math.abs(item.source.x)
+                        item.source.y = Math.abs(item.source.y)
+                        item.target.x = Math.abs(item.target.x)
+                        item.target.y = Math.abs(item.target.y)
+                    })
+                    resolve('success');
+                }
+            });
+        })
+        return promise;
+    }
+
+    async function createNodes() {
+        let num = document.getElementById('inputNumber').value
+        data = JSON.parse(JSON.stringify(initGraphData.init(num)));
+        // for (let i = 0; i < num; i++) {
+        //     apps.append([])
+        // }
+
+        await initTransform()
+        img = new Image();
+        img.src =  IMG_BASE64;
+        img.onload = async function () {
+            data.nodes.forEach(item => nodeMap.set(item.id, item))
+            // console.log("img.onload:", nodeMap, data)
+            redraw();
+        }
+        startZoom();
+
+        let select = document.getElementById("switch-config")
+        for (let i = 0; i < num; i++) {
+            var newOption = document.createElement('option');
+            newOption.value = i;
+            newOption.textContent = 'Switch ' + i;
+            select.appendChild(newOption);
+        }
+        // zoomCenter(0);
+    }
+
+    function updateSelectedApps(id) {
+        switchId, appId = id.split('-');
+    }
+
+    function createInputWithText(descritption, typeName, id) {
+            let div = document.createElement("div");
+            div.textContent = "Source: "
+            let input = document.createElement("input")
+            input.type = 'number';
+            input.id = id;
+            input.onchange = updateSelectedApps(id)
+            outerDiv.appendChild(input);
+    }
+    function listNowApp() {
+        // let select = document.getElementById("switch-config")
+        // let id = Number(select.value)
+        // for (let i = 0;i < len(apps[id]); i++) {
+        //     let parent = document.getElementById("flow-config")
+        //     parent.appendChild(createInputWithText("Source: ", "number", `src-${id}-${i}`))
+        //     parent.appendChild(createInputWithText("Destination: ", "number", `dest-${id}-${i}`))
+        //     parent.appendChild(createInputWithText("Source: ", "number", `${id}-${i}`))
+        //     parent.appendChild(createInputWithText("Source: ", "number", `${id}-${i}`))
+        //     parent.appendChild(createInputWithText("Source: ", "number", `${id}-${i}`))
+        //     parent.appendChild(createInputWithText("Source: ", "number", `${id}-${i}`))
+        //     parent.appendChild(createInputWithText("Source: ", "number", `${id}-${i}`))
+
+
+        //     <div> Source: <input type="number" id="app-src"> </div>
+        //     <div>Destination: <input type="number" id="app-dest"> </div>
+        //     <div>Packet Size(B): <input type="number" id="app-pkt"></div>
+        //     <div>Interval Function: <select id="app-interval-func"><option value="fixed"> fixed </option></select></div>
+        //     <div>Interval(us): <input type="number" id="app-interval"></div>
+        //     <div> Deadline(ms): <input type="number" id="app-ddl"></div>
+        //     <div>Probability: <input type="number" id="app-prob"></div>
+        //     <div>Route: <input type="text" id="app-route"></div>
+        //     <div>Priority: <input type="number" id="app-pri"></div>
+        //     <div>Start Time(ms): <input type="number" id="numberInput"></div>
+        // }
+    }
+    function addNewApp() {
+
+    }
+
+    function osCtxDrawNode(dragId = []) {
+        let { nodes, links } = data;
+        nodes.forEach(item => {
+            const id = helperCanvasId.createId();
+            let { x, y } = item;
+
+            let dX = 0, dY = 0;
+            if(dragId.includes(item.id)) {
+                dX = diffX;
+                dY = diffY;
+            }
+
+            item.nodeId = id;
+
+
+            const [r, g, b, a] = helperCanvasId.idToRgba(id);
+            shapeMap.set(id, item);
+            osCtx.save()
+            osCtx.beginPath();
+            osCtx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
+            osCtx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
+            osCtx.arc(x + dX, y + dY , 15, 0, Math.PI * 2, false)
+            osCtx.fill();
+            osCtx.stroke();
+            osCtx.restore();
+        })
+    }
+
+    //绘制节点
+    function drawNode(dragId = []) {
+        let { nodes, links } = data;
+        nodes.forEach(item => {
+            let { x, y } = item
+            let dX = 0, dY = 0;
+            if(dragId.includes(item.id)) {
+                dX = diffX;
+                dY = diffY;
+            }
+
+    
+            ctx.save()
+            ctx.fillStyle = selectNodeList.includes(item.id) ? 'red' : '#5C89FF';
+            const path = new Path2D();
+            path.arc(x + dX, y + dY , 15, 0, Math.PI * 2, false)
+            ctx.fill(path)
+            ctx.restore()
+            ctx.drawImage(img, x + dX - 10, y + dY - 10, 20, 20);
+
+            ctx.save();
+            ctx.font = '12px 微软雅黑';
+            ctx.textAlign = 'start';
+            ctx.fillStyle = selectNodeList.includes(item.id) ? 'red' : '#1D2939'
+            ctx.fillText('Switch ' + item.id, x + dX + 20, y + dY + 5);
+            ctx.restore();
+        })
+    }
+
+    function osCtxDrawLink(dragId = []) {
+        let { nodes, links } = data
+        links.forEach(item => {
+            const id = helperCanvasId.createId();
+
+            item.edgeId = id;
+            let {x: sourceX, y: sourceY} = nodeMap.get(item.source.id);
+            const { x: targetX, y: targetY  } = nodeMap.get(item.target.id);
+            let sX = 0, sY = 0, tX = 0, tY = 0;
+            if(dragId.includes(item.source.id)) {
+                sX = diffX;
+                sY = diffY;
+            }
+            if(dragId.includes(item.target.id)) {
+                tX = diffX;
+                tY = diffY;
+            }
+
+            const [r, g, b, a] = helperCanvasId.idToRgba(id);
+            shapeMap.set(id, item);
+
+            osCtx.save()
+            osCtx.beginPath();
+            osCtx.lineWidth = 3;
+            osCtx.moveTo(sourceX + sX, sourceY + sY)
+            osCtx.lineTo(targetX + tX, targetY + tY)
+            osCtx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
+            osCtx.stroke();
+            osCtx.restore();
+        })
+    }
+    
+    //绘制连线
+   async function drawLink(dragId = []) {
+        let { nodes, links } = data
+        links.forEach(async item => {
+            let {x: sourceX, y: sourceY} = nodeMap.get(item.source.id);
+            const { x: targetX, y: targetY  } = nodeMap.get(item.target.id);
+
+            let sX = 0, sY = 0, tX = 0, tY = 0;
+            if(dragId.includes(item.source.id)) {
+                sX = diffX;
+                sY = diffY;
+            }
+            if(dragId.includes(item.target.id)) {
+                tX = diffX;
+                tY = diffY;
+            }
+            const lineColor = selectEdgeList.includes(item.id) ? 'red' : '#333';
+
+            ctx.save();
+            const path = new Path2D();
+            path.moveTo(sourceX + sX, sourceY + sY);
+            path.lineTo(targetX + tX, targetY + tY);
+            ctx.strokeStyle = lineColor;
+            ctx.lineWidth = 3;
+            ctx.stroke(path);
+            ctx.restore();
+            
+            const { offsetX, offsetY } = arrowOffset(sourceX + sX, sourceY + sY,targetX + tX, targetY + tY, offset = 20);
+        //    await drawLineArrow(sourceX + sX, sourceY + sY, offsetX, offsetY, lineColor);
+        })
+    }
+
+    
+    
+
+
+    function redraw(dragId = []) {
+        shapeMap.clear();
+        helperCanvasId.idPool = {};
+        console.log(initGraphData.data)
+        // data = JSON.parse(JSON.stringify(initGraphData.data));
+        console.log(data)
+
+        osCtx.save();
+        osCtx.clearRect(0, 0, WIDTH, HEIGHT);
+        osCtx.translate(transform.x, transform.y);
+        osCtx.scale(transform.k, transform.k);
+        osCtx.beginPath();
+        osCtxDrawLink(dragId);
+        osCtxDrawNode(dragId);
+        osCtx.restore();
+
+        ctx.save();
+        ctx.clearRect(0, 0, WIDTH, HEIGHT);
+        ctx.translate(transform.x, transform.y);
+        ctx.scale(transform.k, transform.k);
+        ctx.beginPath(); 
+        drawLink(dragId);
+        drawNode(dragId);
+        ctx.restore();
+    }
+
+
+    function startZoom() {
+        zoom = d3.zoom()
+        .scaleExtent([0.5, 8])
+        .on("zoom", zoomed);
+        // console.log(d3.select(""))
+        d3.select('#visualization-section').call(zoom).on('dblclick.zoom', null);
+    }
+    function zoomed() {
+        if(nodeAbout) return
+        transform = d3.zoomTransform(this); 
+        redraw()
+    }
+    function zoomIn() {
+        d3.select('#visualization-section').transition().call(zoom.scaleBy, 0.7);
+    }
+    function zoomOut() {
+        d3.select('#visualization-section').transition().call(zoom.scaleBy, 1.3);
+    }
+    function zoomCenter(duration = 100) {
+        const containerX = data.nodes.map(item => item.x);
+        const containerY = data.nodes.map(item => item.y);
+
+        const minX = Math.min.apply(null, containerX);
+        const maxX = Math.max.apply(null, containerX);
+
+        const minY = Math.min.apply(null, containerY);
+        const maxY = Math.max.apply(null, containerY);
+
+        const containerGraphBBox = {
+            width: maxX - minX,
+            height: maxY - minY,
+            x: minX,
+            y: minY
+        };
+        const scaleX = WIDTH / containerGraphBBox.width;
+        const scaleY = HEIGHT / containerGraphBBox.height;
+        const k = Math.min(scaleX, scaleY) * 0.9;
+
+        const translateByX = WIDTH / 2 - (containerGraphBBox.width / 2 * k) - (containerGraphBBox.x * k);
+        const translateByY = HEIGHT / 2 - (containerGraphBBox.height / 2 * k) - (containerGraphBBox.y * k);
+
+        transform = d3.zoomIdentity
+            .translate(translateByX, translateByY)
+            .scale(k);
+            
+        d3.select('.visualization-section').transition()
+            .duration(duration)
+            .call(zoom.transform, transform);
+    }
+
+
+    function drawBrush(x1, y1) {
+        let x2, y2;
+        document.onmousemove =  async function(eventMove) {
+            x2 = eventMove.offsetX;
+            y2 = eventMove.offsetY;
+            const w = (x2 - x1);
+            const h = (y2 - y1);
+           await redraw();
+
+            ctx.save(); 
+            ctx.rect(x1, y1, w, h);
+            ctx.strokeStyle = '#fff';
+            ctx.fillStyle = 'rgba(119, 119, 119, 0.3)';
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+        };
+
+        document.onmouseup = function() {
+            document.onmousemove = null;
+            document.onmouseup = null;
+            canvas.style.cursor = '';
+            const brushRange = data.nodes.filter(item => {
+                x = (item.x * transform.k + transform.x);
+                y = (item.y * transform.k + transform.y);
+
+                if(x1 < x2) {
+                    if(x >= x1 & x <= x2 & y >= y1 & y <= y2) {
+                        return item
+                    }
+                }else {
+                    if(x >= x2 & x <= x1 & y >= y2 & y <= y1) {
+                        return item
+                    }
+                }
+                
+            });
+
+           
+
+            selectNodeList = brushRange.map(item => item.id);
+            redraw();
+
+            setTimeout(() => {
+                isBrush = false;
+                console.log(isBrush, isBrush,isBrush,isBrush)
+            },100)
+        }
+    }
+    canvas.ondblclick = async function (event) {
+        const x = event.offsetX;
+        const y = event.offsetY;
+        const rgba = osCtx.getImageData((x), (y), 1, 1).data;
+        const id = helperCanvasId.rgbaToId(rgba);
+        const item = shapeMap.get(id);
+
+        if (item && !dragging) {
+            
+        }
+    }
+    canvas.onclick = async function(event) {
+        const x = event.offsetX;
+        const y = event.offsetY;
+        const rgba = osCtx.getImageData((x), (y), 1, 1).data;
+        const id = helperCanvasId.rgbaToId(rgba);
+        const item = shapeMap.get(id);
+        if(isBrush) return;
+
+        if(item && !dragging) {
+            if(item.hasOwnProperty('nodeId')) {
+                selectNodeList.push(item.id)
+            }
+            
+            if (selectNodeList.length === 2) {
+                data.links.push({source: selectNodeList[0], target: selectNodeList[1]})
+
+                simulation.force('link', d3.forceLink(data.links).id(d => d.id).distance(100))
+                console.log(data.links)
+                selectNodeList = []
+            }
+
+            if(item.hasOwnProperty('edgeId')) {
+                selectEdgeList.push(item.id)
+            }
+        }else {
+            selectNodeList = [];
+            selectEdgeList = [];
+        }
+        if(dragging) {
+            dragging = false;
+            return
+        }
+        redraw()
+    };
+
+
+    canvas.onmousedown = function(event) {
+        const x1 = event.offsetX;
+        const y1 = event.offsetY;
+        const rgba = osCtx.getImageData(x1, y1, 1, 1).data;
+        const id = helperCanvasId.rgbaToId(rgba);
+        const item = shapeMap.get(id);
+        nodeAbout = item ? true : false;
+
+        if(item && item.hasOwnProperty('nodeId') && !isBrush) {
+            event.stopPropagation();
+            event.stopPropagation();
+            nodeDrag(x1, y1, item.id);
+        }
+
+        if(isBrush) {
+            event.stopPropagation();
+            event.stopPropagation();
+            drawBrush(x1, y1);
+        }
+    };
+
+
+    function nodeDrag(x1, y1, nodeId) {
+        let dragId = []
+        document.onmousemove = function(eventMove) {
+            const x2 = eventMove.offsetX;
+            const y2 = eventMove.offsetY;
+                
+
+            diffX = (x2 - x1) /  transform.k;
+            diffY = (y2 - y1) /  transform.k;
+            if(diffX || diffX) {
+                dragging = true
+            }
+            dragId = selectNodeList.includes(nodeId) ? selectNodeList : [nodeId]
+            redraw(dragId)
+        }
+
+        document.onmouseup = function() {
+            document.onmousemove = null;
+            document.onmouseup = null;
+            //鼠标放下更改坐标
+            dragId.forEach(item => {
+                let nodeItem = nodeMap.get(item);
+                nodeItem.x = nodeItem.x  + diffX
+                nodeItem.y = nodeItem.y  + diffY
+            })
+                
+            setTimeout(() => {
+                dragging = false;
+                diffX = 0;
+                diffY = 0;
+            },100)
+        }
+    }
+
+    canvas.onmouseup = function(event) {
+        nodeAbout = false;
+        document.onmousemove = null;
+    };
+
+    canvas.oncontextmenu = function(event) {
+        if(!isBrush) {
+            event.stopPropagation();
+            canvas.style.cursor = 'crosshair';
+            isBrush = true;
+        }else {
+            event.stopPropagation();
+            canvas.style.cursor = '';
+            isBrush = false;
+        }
+        return false;
+    };
+
+
+    function arrowOffset(fromX, fromY, toX, toY, offset ) {
+        const deg = Math.atan2(fromY - toY, fromX - toX) * 180 / Math.PI;
+        const offsetX =  toX + (20 * Math.cos(deg * Math.PI / 180))
+        const offsetY =  toY + (20 * Math.sin(deg * Math.PI / 180))
+        return { offsetX, offsetY }
+    }
+
+
+    function drawLineArrow(fromX, fromY, toX, toY, lineColor) {
+        const len = 15;//自定义箭头线的长度
+        const theta = 25;//自定义箭头线与直线的夹角
+        let arrowX, arrowY;//箭头线终点坐标
+
+        const angle = Math.atan2(fromY - toY, fromX - toX) * 180 / Math.PI;
+        const angle1 = (angle + theta) * Math.PI / 180;
+        const angle2 = (angle - theta) * Math.PI / 180;
+
+
+        const topX = len * Math.cos(angle1);
+        const topY = len * Math.sin(angle1);
+        const botX = len * Math.cos(angle2);
+        const botY = len * Math.sin(angle2);
+
+        ctx.save();
+        ctx.beginPath();
+        arrowX = toX + topX;
+        arrowY = toY + topY;
+        //画上边箭头线
+        ctx.moveTo(arrowX, arrowY);
+        ctx.lineTo(toX, toY);
+        arrowX = toX + botX;
+        arrowY = toY + botY;
+        //画下边箭头线
+        ctx.lineTo(arrowX, arrowY);
+        ctx.fillStyle = lineColor;
+        ctx.strokeStyle = lineColor;
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    
+
+
+</script>
+
+    <!-- <table>
+        <tr>
+            <th></th>
+            <th>1</th>
+            <th>2</th>
+            <th>3</th>
+            <th>4</th>
+            <th>5</th>
+            <th>6</th>
+            <th>7</th>
+            <th>8</th>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+        </tr>
+    </table> -->

@@ -24,6 +24,6 @@ class Link:
         return self.next_available_time
 
     def do(self, devices):
-        devices[self.pkt.get_next_route()].receive_packet(self.pkt)
+        devices[self.pkt.next_hop()].receive_packet(self.pkt)
         self.pkt = None
         self.next_available_time = 0
